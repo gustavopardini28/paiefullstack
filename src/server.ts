@@ -22,37 +22,63 @@ app.post('/users', (req,res) => {
     
   })
  res.status(201).send('Sucessfully added')
-})
+});
+
 
 app.get('/users', (req,res) => {
-  res.json({
-    users
+  const { orderedUser } = req.query;
+
+  const sortedUsers = users.sort((a,b) => {
+    if ( orderedUser === "desc" ) {
+      return a.id < b.id ? 1 : -1
+    }
+    return a.id > b.id ? 1 : -1
   })
+  res.send(sortedUsers);
+});
+
+app.get('/users/:id', (req,res) => {
+  const { id } =  req.params;
+
+  const user = users.find( user => user.id === id )
+  if ( !user ) {
+    return res.send(404).json({ message: 'User not found' })
+  }
+  res.send(user)
 })
 
 app.put('/users/:id', (req,res) => {
-  const userId = req.params.id;
-  const targetName = req.body.name;
-  const targetUser = users.find( user => userId === user.id )
-  if ( !targetUser ) {
-    return res.status(404).json({ message: 'User not found' })
+  const { id } = req.params;
+  const { name } = req.body;
+
+  const userExists = users.find( user => id === user.id )
+
+  if ( !userExists ) {
+    return res.send(400).json({ messgae: 'user not found'});
   }
-  targetUser.name = targetName;
+
+  users = users.map( user => {
+    if ( user.id === id ) {
+      return {...user, name}
+  }
+
+  return user;
+});
   return res.json({ message: 'name changed' })
-})
+});
 
 app.delete('/users/:id', (req,res) => {
-  const userId = req.params.id;
-  const usersFiltered = users.filter( user => userId !== user.id );
-  users = usersFiltered;
+  const { id } = req.params;
+  users = users.filter( user => user.id !== id)
 
   return res.json({ message: 'user deleted' })
 
-})
+});
+
 
 app.listen(3000,() => {
   console.log('server is listening on port 3000');
-})
+});
 
 // c - create ✔
 // r - read ✔
