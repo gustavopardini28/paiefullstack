@@ -1,79 +1,49 @@
-import { randomUUID } from 'crypto';
 import express from 'express'
-
-interface User {
-  id: string,
-  name: string,
-  age: number
-}
-
-let users:User[] = []
+import "dotenv/config"
+import { routes } from './routes';
 
 const app = express();
 
 app.use(express.json());
+app.use(routes);
 
-app.post('/users', (req,res) => {
-  const user = req.body
-  users.push({
-    age: user.age,
-    name: user.name,
-    id: randomUUID()
-    
-  })
- res.status(201).send('Sucessfully added')
-});
+// app.get('/users/:id', (req,res) => {
+//   const { id } =  req.params;
 
+//   const user = users.find( user => user.id === id )
+//   if ( !user ) {
+//     return res.send(404).json({ message: 'User not found' })
+//   }
+//   res.send(user)
+// })
 
-app.get('/users', (req,res) => {
-  const { orderedUser } = req.query;
+// app.put('/users/:id', (req,res) => {
+//   const { id } = req.params;
+//   const { name } = req.body;
 
-  const sortedUsers = users.sort((a,b) => {
-    if ( orderedUser === "desc" ) {
-      return a.id < b.id ? 1 : -1
-    }
-    return a.id > b.id ? 1 : -1
-  })
-  res.send(sortedUsers);
-});
+//   const userExists = users.find( user => id === user.id )
 
-app.get('/users/:id', (req,res) => {
-  const { id } =  req.params;
+//   if ( !userExists ) {
+//     return res.send(400).json({ messgae: 'user not found'});
+//   }
 
-  const user = users.find( user => user.id === id )
-  if ( !user ) {
-    return res.send(404).json({ message: 'User not found' })
-  }
-  res.send(user)
-})
+//   users = users.map( user => {
+//     if ( user.id === id ) {
+//       return {...user, name}
+//   }
 
-app.put('/users/:id', (req,res) => {
-  const { id } = req.params;
-  const { name } = req.body;
+//   return user;
+// });
+//   return res.json({ message: 'name changed' })
+// });
 
-  const userExists = users.find( user => id === user.id )
+// app.delete('/users/:id', (req,res) => {
+//   const { id } = req.params;
+//   users = users.filter( user => user.id !== id)
 
-  if ( !userExists ) {
-    return res.send(400).json({ messgae: 'user not found'});
-  }
+//   return res.json({ message: 'user deleted' })
 
-  users = users.map( user => {
-    if ( user.id === id ) {
-      return {...user, name}
-  }
-
-  return user;
-});
-  return res.json({ message: 'name changed' })
-});
-
-app.delete('/users/:id', (req,res) => {
-  const { id } = req.params;
-  users = users.filter( user => user.id !== id)
-
-  return res.json({ message: 'user deleted' })
-
-});
+// });
 
 
 app.listen(3000,() => {
